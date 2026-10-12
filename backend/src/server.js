@@ -43,7 +43,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // 2. Root API Welcome Endpoint
-app.get('/', (req, res) => {
+app.get(['/', '/api'], (req, res) => {
   res.json({
     message: 'Welcome to ScholarMatch AI - Scholarship & Financial Aid API',
     version: '1.0.0',
@@ -60,8 +60,9 @@ app.get('/', (req, res) => {
   });
 });
 
-// 3. Mount API v1 Routes
+// 3. Mount API Routes
 app.use('/api/v1', apiRoutes);
+app.use('/api', apiRoutes);
 
 // 4. 404 Route Handler
 app.use((req, res) => {
@@ -74,17 +75,19 @@ app.use((req, res) => {
 // 5. Centralized Error Handler
 app.use(errorHandler);
 
-// 6. Start Server
-const server = app.listen(env.port, env.host, async () => {
-  console.log(`\n======================================================`);
-  console.log(`🚀 ScholarMatch AI Backend Server running on ${env.host}:${env.port}`);
-  console.log(`📡 URL: http://${env.host === '0.0.0.0' ? 'localhost' : env.host}:${env.port}`);
-  console.log(`🌍 Environment: ${env.nodeEnv}`);
-  console.log(`🔑 Auth Mode: ${env.authMode}`);
-  
-  const health = await checkSupabaseHealth();
-  console.log(`🗄️ Database: ${health.message} (${health.mode})`);
-  console.log(`======================================================\n`);
-});
+// 6. Start Server (listen when run standalone/container; skipped in Vercel serverless runtime)
+if (!process.env.VERCEL) {
+  const server = app.listen(env.port, env.host, async () => {
+    console.log(`\n======================================================`);
+    console.log(`🚀 ScholarMatch AI Backend Server running on ${env.host}:${env.port}`);
+    console.log(`📡 URL: http://${env.host === '0.0.0.0' ? 'localhost' : env.host}:${env.port}`);
+    console.log(`🌍 Environment: ${env.nodeEnv}`);
+    console.log(`🔑 Auth Mode: ${env.authMode}`);
+    
+    const health = await checkSupabaseHealth();
+    console.log(`🗄️ Database: ${health.message} (${health.mode})`);
+    console.log(`======================================================\n`);
+  });
+}
 
 export default app;
