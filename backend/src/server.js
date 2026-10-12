@@ -75,10 +75,10 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 // 6. Start Server
-const server = app.listen(env.port, async () => {
+const server = app.listen(env.port, env.host, async () => {
   console.log(`\n======================================================`);
-  console.log(`🚀 ScholarMatch AI Backend Server running on port ${env.port}`);
-  console.log(`📡 URL: http://localhost:${env.port}`);
+  console.log(`🚀 ScholarMatch AI Backend Server running on ${env.host}:${env.port}`);
+  console.log(`📡 URL: http://${env.host === '0.0.0.0' ? 'localhost' : env.host}:${env.port}`);
   console.log(`🌍 Environment: ${env.nodeEnv}`);
   console.log(`🔑 Auth Mode: ${env.authMode}`);
   
